@@ -1,0 +1,11 @@
+main: kor.toxicity.inventory.InventoryAPIImpl
+version: 1.0
+name: InventoryAPI
+author: toxicity
+api-version: 1.19
+description: An api for inventory.
+load: POSTWORLD
+commands:
+  inventoryapi:
+    description: A Command of InventoryAPI.
+    usage: /<command>

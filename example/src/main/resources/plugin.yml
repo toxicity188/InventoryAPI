@@ -1,0 +1,13 @@
+main: kor.toxicity.inventory.example.InventoryExample
+version: 1.0
+name: InventoryAPI-Example
+author: toxicity
+description: An example plugin of InventoryAPI
+load: POSTWORLD
+api-version: 1.19
+depend:
+  - InventoryAPI
+commands:
+  testmenu:
+    description: Test command.
+    usage: /<command>
