@@ -60,7 +60,7 @@ public class InventoryExample extends JavaPlugin {
                             .setSpace(6)
                             .setText("LV: " + FORMAT.format(player.getLevel()))
                             .setStyle(Style.style(NamedTextColor.WHITE))
-                            .setXOffset(-77)
+                            .setXOffset(-80)
                             .build()
                     )
                     .append(secondLine.builder()
@@ -76,20 +76,21 @@ public class InventoryExample extends JavaPlugin {
             var command = getCommand("testmenu");
             if (command != null) command.setExecutor((sender, command1, label, args) -> {
                 if (sender instanceof Player player) {
-                    gui.openGui(player, GuiType.DEFAULT, new GuiExecutor() {
+                    gui.openGui(player, GuiType.DEFAULT, 4, new GuiExecutor() {
                         @Override
                         public void onInitialize(@NotNull GuiHolder holder) {
-
+                            player.sendMessage(Component.text("Hello world!"));
                         }
 
                         @Override
-                        public void onClick(@NotNull GuiHolder holder, boolean isPlayerInventory, int clickedSlot, @NotNull ItemStack clickedItem, @NotNull MouseButton button) {
-
+                        public boolean onClick(@NotNull GuiHolder holder, boolean isPlayerInventory, int clickedSlot, @NotNull ItemStack clickedItem, @NotNull MouseButton button) {
+                            player.sendMessage(Component.text("The clicked slot is " + clickedSlot + "!"));
+                            return true;
                         }
 
                         @Override
                         public void onEnd(@NotNull GuiHolder holder) {
-
+                            player.sendMessage(Component.text("Gui ended!"));
                         }
                     });
                 }

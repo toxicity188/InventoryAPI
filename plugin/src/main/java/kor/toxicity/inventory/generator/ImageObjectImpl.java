@@ -4,6 +4,7 @@ import kor.toxicity.inventory.api.gui.GuiObject;
 import kor.toxicity.inventory.api.gui.GuiObjectGenerator;
 import kor.toxicity.inventory.util.AdventureUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 
 public class ImageObjectImpl implements GuiObject {
@@ -15,7 +16,7 @@ public class ImageObjectImpl implements GuiObject {
         var heightValue = (double) objectGenerator.getHeight() / image.getHeight();
         component = AdventureUtil.getSpaceFont(xOffset).append(
                 Component.text(objectGenerator.getSerialChar())
-                        .font(objectGenerator.getFontKey()))
+                        .font(objectGenerator.getFontKey()).color(NamedTextColor.WHITE))
                 .append(AdventureUtil.getSpaceFont((int) -Math.round(objectGenerator.getImage().image().getWidth() * heightValue)));
     }
 

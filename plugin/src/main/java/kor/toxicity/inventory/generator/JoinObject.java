@@ -2,15 +2,12 @@ package kor.toxicity.inventory.generator;
 
 import kor.toxicity.inventory.api.gui.GuiObject;
 import kor.toxicity.inventory.api.gui.GuiObjectGenerator;
-import kor.toxicity.inventory.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class JoinObject implements GuiObject {
-
-    private static final Component ONE_BACKSPACE = AdventureUtil.getSpaceFont(-1);
 
     private final GuiObjectGenerator generator;
     private final Component first;
@@ -24,7 +21,7 @@ public class JoinObject implements GuiObject {
 
     @Override
     public @NotNull Component asComponent() {
-        return first.append(ONE_BACKSPACE).append(second);
+        return first.append(second);
     }
 
     @Override
