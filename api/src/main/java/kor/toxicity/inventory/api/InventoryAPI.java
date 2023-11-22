@@ -72,5 +72,5 @@ public abstract class InventoryAPI extends JavaPlugin {
 
     public abstract @NotNull MiniMessage miniMessage();
     public abstract @NotNull GuiFont defaultFont();
-    public abstract void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, @NotNull GuiExecutor executor);
+    public abstract void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor);
 }

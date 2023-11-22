@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public record Gui(@NotNull Component name, int size, @NotNull Map<Integer, ItemStack> contents, @NotNull Function<@NotNull Player, @NotNull GuiObject> object) {
-    public void openGui(@NotNull Player player, @NotNull GuiType type, @NotNull GuiExecutor executor) {
-        InventoryAPI.getInstance().openGui(player, this, type, executor);
+    public void openGui(@NotNull Player player, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor) {
+        InventoryAPI.getInstance().openGui(player, this, type, delay, executor);
     }
 }

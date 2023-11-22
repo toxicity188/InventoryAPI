@@ -17,10 +17,13 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -58,6 +61,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
 
     private GuiFont font;
     private final List<InventoryManager> managers = new ArrayList<>();
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
 
     @Override
     public void onEnable() {
@@ -88,8 +92,35 @@ public final class InventoryAPIImpl extends InventoryAPI {
         pluginManager.registerEvents(new Listener() {
             @EventHandler
             public void click(InventoryClickEvent event) {
-                if (event.getWhoClicked() instanceof Player player) {
-
+                if (event.getView().getTopInventory().getHolder() instanceof GuiHolder holder) {
+                    var executor = holder.getExecutor();
+                    MouseButton button;
+                    if (event.isLeftClick()) {
+                        button = event.isShiftClick() ? MouseButton.SHIFT_LEFT : MouseButton.LEFT;
+                    } else if (event.isRightClick()) {
+                        button = event.isShiftClick() ? MouseButton.SHIFT_RIGHT : MouseButton.RIGHT;
+                    } else {
+                        button = MouseButton.OTHER;
+                    }
+                    event.setCancelled(executor.onClick(
+                            holder,
+                            Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory()),
+                            event.getSlot(),
+                            event.getCurrentItem() != null ? event.getCurrentItem() : AIR,
+                            button
+                    ));
+                }
+            }
+            @EventHandler
+            public void end(InventoryCloseEvent event) {
+                if (event.getPlayer() instanceof Player player && event.getView().getTopInventory().getHolder() instanceof GuiHolder holder) {
+                    var executor = holder.getExecutor();
+                    executor.onEnd(holder);
+                    if (holder.getType() == GuiType.SUB) {
+                        var parent = holder.getParent();
+                        if (parent == null) return;
+                        Bukkit.getScheduler().runTaskLater(InventoryAPIImpl.this, () -> parent.open(player), 1);
+                    }
                 }
             }
         }, this);
@@ -132,14 +163,16 @@ public final class InventoryAPIImpl extends InventoryAPI {
 
 
     @Override
-    public void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, @NotNull GuiExecutor executor) {
+    public void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor) {
         var holder = new GuiHolder(Component.empty().append(AdventureUtil.getSpaceFont(-8)).append(gui.object().apply(player).asComponent()).append(gui.name()), gui.size(), type);
+        holder.setDelay(delay);
+        holder.setExecutor(executor);
         var inventory = holder.getInventory();
         gui.contents().forEach(inventory::setItem);
 
         var oldInventory = player.getOpenInventory().getTopInventory().getHolder();
         if (oldInventory instanceof GuiHolder oldHolder) holder.setParent(oldHolder);
-        player.openInventory(inventory);
+        holder.open(player);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
