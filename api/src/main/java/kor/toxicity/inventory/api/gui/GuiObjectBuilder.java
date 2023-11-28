@@ -7,10 +7,10 @@ public interface GuiObjectBuilder {
     @NotNull GuiObject build();
 
 
-    default FontObjectBuilder asFont() {
+    default @NotNull FontObjectBuilder asFont() {
         return (FontObjectBuilder) this;
     }
-    default ImageObjectGenerator asImage() {
+    default @NotNull ImageObjectGenerator asImage() {
         return (ImageObjectGenerator) this;
     }
 }

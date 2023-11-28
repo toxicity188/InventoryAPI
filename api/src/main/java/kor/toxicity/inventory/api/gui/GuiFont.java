@@ -24,8 +24,8 @@ public final class GuiFont implements GuiResource {
     private final @NotNull String name;
     private final @NotNull Font font;
     private final int size;
-    private final @NotNull Map<@NotNull Character, @NotNull Function<@NotNull Integer, @NotNull Integer>> fontWidth;
-    private final @NotNull List<@NotNull Character> availableChar;
+    private final @NotNull Map<Character, Function<Integer, Integer>> fontWidth;
+    private final @NotNull List<Character> availableChar;
     private final @NotNull FontMetrics metrics;
 
     public GuiFont(@NotNull Font font, @NotNull String name) {
@@ -41,7 +41,7 @@ public final class GuiFont implements GuiResource {
         this.font = font.deriveFont((float) size);
         this.name = name;
         this.size = size;
-        var widthMap = new TreeMap<@NotNull Character, @NotNull Function<@NotNull Integer, @NotNull Integer>>();
+        var widthMap = new TreeMap<@NotNull Character, @NotNull Function<Integer, Integer>>();
         IntStream.rangeClosed(Character.MIN_VALUE, Character.MAX_VALUE).mapToObj(i -> (char) i).filter(font::canDisplay).forEach(c -> {
             var str = this.font.getStringBounds(Character.toString(c), CONTEXT);
             widthMap.put(c, i -> (int) Math.round((str.getWidth() * i  / VERTICAL_SIZE / str.getHeight() + width) * widthMultiplier));
