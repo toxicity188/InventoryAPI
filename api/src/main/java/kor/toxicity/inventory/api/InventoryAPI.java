@@ -10,6 +10,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +72,15 @@ public abstract class InventoryAPI extends JavaPlugin {
         });
     }
 
+    public @NotNull ItemStack getEmptyItem(@NotNull Consumer<ItemMeta> metaConsumer) {
+        var stack = new ItemStack(getResourcePackManager().getEmptyMaterial());
+        var meta = stack.getItemMeta();
+        assert meta != null;
+        metaConsumer.accept(meta);
+        meta.setCustomModelData(1);
+        stack.setItemMeta(meta);
+        return stack;
+    }
     public abstract @NotNull MiniMessage miniMessage();
     public abstract @NotNull GuiFont defaultFont();
     public abstract void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor);

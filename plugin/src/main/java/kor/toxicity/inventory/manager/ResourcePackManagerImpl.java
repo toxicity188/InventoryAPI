@@ -15,6 +15,9 @@ import kor.toxicity.inventory.builder.JsonObjectBuilder;
 import kor.toxicity.inventory.generator.FontObjectGeneratorImpl;
 import kor.toxicity.inventory.generator.ImageObjectGeneratorImpl;
 import kor.toxicity.inventory.util.PluginUtil;
+import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -30,16 +33,54 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
     private final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     private final List<FontObjectGeneratorImpl> fonts = new ArrayList<>();
     private final List<ImageObjectGeneratorImpl> images = new ArrayList<>();
+    @Getter
+    private Material emptyMaterial = Material.DIAMOND_HORSE_ARMOR;
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void reload() {
-        var assets = getFile(getFile(getFile(InventoryAPI.getInstance().getDataFolder(), ".generated"), "assets"), "inventory");
+        var topFolder = getFile(getFile(InventoryAPI.getInstance().getDataFolder(), ".generated"), "assets");
+        var assets = getFile(topFolder, "inventory");
         var font = getFile(assets, "font");
         var fontFont = getFile(font, "font");
         var textures = getFile(assets, "textures");
         var texturesFont = getFile(textures, "font");
         var texturesFontGui = getFile(texturesFont, "gui");
         var texturesFontFont = getFile(texturesFont, "font");
+        var models = getFile(getFile(getFile(topFolder, "minecraft"), "models"),"item");
+
+        var config = getFile(InventoryAPI.getInstance().getDataFolder(), "config.yml");
+        if (!config.exists()) InventoryAPI.getInstance().saveResource("config.yml", false);
+        try {
+            var yaml = YamlConfiguration.loadConfiguration(config).getString("default-empty-material");
+            if (yaml != null) emptyMaterial = Material.valueOf(yaml.toUpperCase());
+        } catch (Exception e) {
+            PluginUtil.warn("Unable to load config.yml");
+            PluginUtil.warn("Reason: " + e.getMessage());
+        }
+        var emptyMaterialLowerCase = emptyMaterial.name().toLowerCase();
+        var modelsFile = new File(models, emptyMaterialLowerCase + ".json");
+        var modelsJson = new JsonObjectBuilder()
+                .add("parent", "minecraft:item/generated")
+                .add("textures", new JsonObjectBuilder()
+                        .add("0", "minecraft:item/" + emptyMaterialLowerCase)
+                        .build()
+                )
+                .add("overrides", new JsonArrayBuilder()
+                        .add(new JsonObjectBuilder()
+                                .add("predicate", new JsonObjectBuilder()
+                                        .add("custom_model_data", 1)
+                                        .build())
+                                .add("model", "inventory:item/empty")
+                                .build()
+                        )
+                        .build()
+                )
+                .build();
+        try (var writer = new JsonWriter(new BufferedWriter(new FileWriter(modelsFile)))) {
+            gson.toJson(modelsJson, writer);
+        } catch (Exception e) {
+            PluginUtil.warn("Unable to make a empty material file.");
+        }
 
         fonts.forEach(f -> {
             var targetFolder = new File(texturesFontFont, f.getFont().getName());
