@@ -60,6 +60,7 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
         var emptyMaterialLowerCase = emptyMaterial.name().toLowerCase();
         var modelsFile = new File(models, emptyMaterialLowerCase + ".json");
         var modelsJson = new JsonObjectBuilder()
+                .add("parent", "item/generated")
                 .add("textures", new JsonObjectBuilder()
                         .add("layer0", "minecraft:item/" + emptyMaterialLowerCase)
                         .build()

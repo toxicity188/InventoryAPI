@@ -155,6 +155,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
         } catch (Exception e) {
             PluginUtil.warn("Unable to find unifont.ttf.");
             pluginManager.disablePlugin(this);
+            return;
         }
         Bukkit.getScheduler().runTask(this, () -> {
             pluginManager.callEvent(new PluginReloadStartEvent());
