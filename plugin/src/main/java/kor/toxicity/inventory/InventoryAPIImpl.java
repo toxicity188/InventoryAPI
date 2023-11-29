@@ -139,6 +139,10 @@ public final class InventoryAPIImpl extends InventoryAPI {
             @EventHandler
             public void end(InventoryCloseEvent event) {
                 if (event.getPlayer() instanceof Player player && event.getView().getTopInventory().getHolder() instanceof GuiHolder holder) {
+                    if (holder.isLocked()) {
+                        holder.setLocked(false);
+                        return;
+                    }
                     var executor = holder.getExecutor();
                     executor.onEnd(holder);
                     if (holder.getType() == GuiType.SUB) {
@@ -197,7 +201,10 @@ public final class InventoryAPIImpl extends InventoryAPI {
         gui.contents().forEach(inventory::setItem);
 
         var oldInventory = player.getOpenInventory().getTopInventory().getHolder();
-        if (oldInventory instanceof GuiHolder oldHolder) holder.setParent(oldHolder);
+        if (oldInventory instanceof GuiHolder oldHolder) {
+            holder.setParent(oldHolder);
+            oldHolder.setLocked(true);
+        }
         holder.open(player);
     }
 

@@ -25,6 +25,10 @@ public final class GuiHolder implements InventoryHolder {
     @Setter
     private GuiHolder parent;
 
+    @Getter
+    @Setter
+    private boolean locked;
+
     public GuiHolder(@NotNull Component component, int size, @NotNull GuiType type) {
         inventory = Bukkit.createInventory(this, size, component);
         this.type = type;
