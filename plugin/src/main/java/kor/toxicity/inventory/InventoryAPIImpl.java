@@ -11,6 +11,9 @@ import kor.toxicity.inventory.manager.ResourcePackManagerImpl;
 import kor.toxicity.inventory.util.AdventureUtil;
 import kor.toxicity.inventory.util.PluginUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.Context;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -24,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -57,6 +61,20 @@ public final class InventoryAPIImpl extends InventoryAPI {
                     )
                     .build()
             )
+            .postProcessor(c -> {
+                var style = c.style();
+                if (style.color() == null) style = style.color(NamedTextColor.WHITE);
+                var deco = style.decorations();
+                var newDeco = new EnumMap<TextDecoration, TextDecoration.State>(TextDecoration.class);
+                for (TextDecoration value : TextDecoration.values()) {
+                    var get = deco.get(value);
+                    if (get == null || get == TextDecoration.State.NOT_SET) {
+                        newDeco.put(value, TextDecoration.State.FALSE);
+                    } else newDeco.put(value, get);
+                }
+                style = style.decorations(newDeco);
+                return c.style(style);
+            })
         .build();
 
     private GuiFont font;
@@ -90,9 +108,16 @@ public final class InventoryAPIImpl extends InventoryAPI {
             return true;
         });
         pluginManager.registerEvents(new Listener() {
+            private final Map<UUID, BukkitTask> delayMap = new HashMap<>();
             @EventHandler
             public void click(InventoryClickEvent event) {
                 if (event.getView().getTopInventory().getHolder() instanceof GuiHolder holder) {
+                    var player = event.getWhoClicked();
+                    if (delayMap.containsKey(player.getUniqueId())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                    delayMap.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLaterAsynchronously(InventoryAPIImpl.this, () -> delayMap.remove(player.getUniqueId()), holder.getDelay()));
                     var executor = holder.getExecutor();
                     MouseButton button;
                     if (event.isLeftClick()) {
@@ -104,7 +129,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
                     }
                     event.setCancelled(executor.onClick(
                             holder,
-                            Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory()),
+                            Objects.equals(event.getClickedInventory(), player.getInventory()),
                             event.getSlot(),
                             event.getCurrentItem() != null ? event.getCurrentItem() : AIR,
                             button

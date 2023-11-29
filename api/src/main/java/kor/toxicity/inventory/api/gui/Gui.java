@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public record Gui(@NotNull Component name, int size, @NotNull Map<Integer, ItemStack> contents, @NotNull Function<Player, GuiObject> object) {
+    public static final Function<Player, GuiObject> EMPTY = p -> GuiObject.EMPTY;
     public void openGui(@NotNull Player player, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor) {
         InventoryAPI.getInstance().openGui(player, this, type, delay, executor);
     }

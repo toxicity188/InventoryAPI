@@ -48,7 +48,7 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
         var texturesFontFont = getFile(texturesFont, "font");
         var models = getFile(getFile(getFile(topFolder, "minecraft"), "models"),"item");
 
-        var config = getFile(InventoryAPI.getInstance().getDataFolder(), "config.yml");
+        var config = new File(InventoryAPI.getInstance().getDataFolder(), "config.yml");
         if (!config.exists()) InventoryAPI.getInstance().saveResource("config.yml", false);
         try {
             var yaml = YamlConfiguration.loadConfiguration(config).getString("default-empty-material");
@@ -60,9 +60,8 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
         var emptyMaterialLowerCase = emptyMaterial.name().toLowerCase();
         var modelsFile = new File(models, emptyMaterialLowerCase + ".json");
         var modelsJson = new JsonObjectBuilder()
-                .add("parent", "minecraft:item/generated")
                 .add("textures", new JsonObjectBuilder()
-                        .add("0", "minecraft:item/" + emptyMaterialLowerCase)
+                        .add("layer0", "minecraft:item/" + emptyMaterialLowerCase)
                         .build()
                 )
                 .add("overrides", new JsonArrayBuilder()
