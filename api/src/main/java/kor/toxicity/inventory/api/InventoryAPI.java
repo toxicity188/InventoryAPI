@@ -63,12 +63,15 @@ public abstract class InventoryAPI extends JavaPlugin {
     public abstract void reload();
     public void reload(@NotNull Consumer<Long> longConsumer) {
         var pluginManager = Bukkit.getPluginManager();
+        pluginManager.callEvent(new PluginReloadStartEvent());
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            pluginManager.callEvent(new PluginReloadStartEvent());
             var time = System.currentTimeMillis();
             reload();
-            pluginManager.callEvent(new PluginReloadEndEvent());
-            longConsumer.accept(System.currentTimeMillis() - time);
+            var time2 = System.currentTimeMillis() - time;
+            Bukkit.getScheduler().runTask(this, () -> {
+                pluginManager.callEvent(new PluginReloadEndEvent());
+                longConsumer.accept(time2);
+            });
         });
     }
 

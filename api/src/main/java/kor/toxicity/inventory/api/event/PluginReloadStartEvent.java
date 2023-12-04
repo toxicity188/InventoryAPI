@@ -5,9 +5,6 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public final class PluginReloadStartEvent extends Event implements InventoryAPIEvent {
-    public PluginReloadStartEvent() {
-        super(true);
-    }
     @NotNull
     @Override
     public HandlerList getHandlers() {
