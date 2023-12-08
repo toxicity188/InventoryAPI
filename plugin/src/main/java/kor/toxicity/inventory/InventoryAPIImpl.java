@@ -132,6 +132,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
                             Objects.equals(event.getClickedInventory(), player.getInventory()),
                             event.getSlot(),
                             event.getCurrentItem() != null ? event.getCurrentItem() : AIR,
+                            event.getCursor(),
                             button
                     ));
                 }

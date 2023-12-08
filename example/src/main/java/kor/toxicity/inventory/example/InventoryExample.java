@@ -83,7 +83,7 @@ public class InventoryExample extends JavaPlugin {
                         }
 
                         @Override
-                        public boolean onClick(@NotNull GuiHolder holder, boolean isPlayerInventory, int clickedSlot, @NotNull ItemStack clickedItem, @NotNull MouseButton button) {
+                        public boolean onClick(@NotNull GuiHolder holder, boolean isPlayerInventory, int clickedSlot, @NotNull ItemStack clickedItem, @NotNull ItemStack cursorItem, @NotNull MouseButton button) {
                             player.sendMessage(Component.text("The clicked slot is " + clickedSlot + "!"));
                             return true;
                         }
