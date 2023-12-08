@@ -45,5 +45,8 @@ public record Gui(@NotNull Component name, int size, int space, @NotNull Map<Int
         public void setContents(@NotNull Map<Integer, ItemStack> contents) {
             this.contents = Objects.requireNonNull(contents);
         }
+        public @NotNull Gui build() {
+            return new Gui(component, size, space, contents, object);
+        }
     }
 }
