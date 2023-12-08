@@ -185,6 +185,8 @@ public class ResourcePackManagerImpl implements ResourcePackManager {
         }
 
         ImageObjectGeneratorImpl.initialize();
+        fonts.clear();
+        images.clear();
     }
 
     @Override

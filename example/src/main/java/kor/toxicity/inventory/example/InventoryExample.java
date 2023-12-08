@@ -30,7 +30,7 @@ public class InventoryExample extends JavaPlugin {
             var secondLine = InventoryAPI.getInstance().defaultFont().generator(12, -42);
 
 
-            var gui = new Gui(Component.empty(), 54, Collections.emptyMap(), player -> guiImage.builder().build()
+            var gui = new Gui(Component.empty(), 54, -8, Collections.emptyMap(), player -> guiImage.builder().build()
                     .append(playerNameGenerator.builder()
                             .asFont()
                             .setSpace(8)

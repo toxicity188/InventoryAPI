@@ -162,9 +162,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
             return;
         }
         Bukkit.getScheduler().runTask(this, () -> {
-            pluginManager.callEvent(new PluginReloadStartEvent());
-            reload();
-            pluginManager.callEvent(new PluginReloadEndEvent());
+            load();
             getLogger().info("Plugin enabled.");
         });
     }
@@ -174,13 +172,18 @@ public final class InventoryAPIImpl extends InventoryAPI {
         getLogger().info("Plugin disabled.");
     }
 
-    @Override
-    public void reload() {
+
+    public void reload(boolean callEvent) {
+        if (callEvent) Bukkit.getPluginManager().callEvent(new PluginReloadStartEvent());
+        load();
+        if (callEvent) Bukkit.getPluginManager().callEvent(new PluginReloadEndEvent());
+    }
+
+    private void load() {
         delete(new File(getDataFolder(), ".generated"));
         unzipAssets(".generated", "assets");
         managers.forEach(InventoryManager::reload);
     }
-
     @Override
     public @NotNull MiniMessage miniMessage() {
         return MINI_MESSAGE;
@@ -194,7 +197,7 @@ public final class InventoryAPIImpl extends InventoryAPI {
 
     @Override
     public void openGui(@NotNull Player player, @NotNull Gui gui, @NotNull GuiType type, long delay, @NotNull GuiExecutor executor) {
-        var holder = new GuiHolder(Component.empty().append(AdventureUtil.getSpaceFont(-8)).append(gui.object().apply(player).asComponent()).append(gui.name()), gui.size(), type);
+        var holder = new GuiHolder(Component.empty().append(AdventureUtil.getSpaceFont(gui.space())).append(gui.object().apply(player).asComponent()).append(gui.name()), gui.size(), type);
         holder.setDelay(delay);
         holder.setExecutor(executor);
         var inventory = holder.getInventory();

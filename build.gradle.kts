@@ -8,7 +8,7 @@ allprojects {
     apply(plugin = "java")
 
     group = "kor.toxicity.inventory"
-    version = "1.0.3"
+    version = "1.0.4"
 
     repositories {
         mavenCentral()
